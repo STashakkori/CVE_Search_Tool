@@ -1,3 +1,6 @@
+// CVE Search Tool
+// Author: Sina Tashakkori, QVLx Labs
+
 use quick_xml::Reader;
 use quick_xml::events::Event;
 use std::fs::File;
@@ -45,37 +48,37 @@ fn main() {
 
   // Loop through xml starts here
   loop {
-		match reader.read_event(&mut buf) {
+    match reader.read_event(&mut buf) {
       Ok(Event::Start(ref e)) if e.name() == b"Title" => {
-				entry = match reader.read_text(b"Title", &mut Vec::new()) {
-					Ok(r) => r,
-					Err(e) => { println!("\x1b[38;5;208mError reading xml: {}\x1b[0m", e); return; }
-				};
-			}
-			Ok(Event::Start(ref e)) if e.name() == b"Note" => {
-				let attr = &e.attributes().map(|a| a.unwrap()).collect::<Vec<_>>()[1];
-				let desc = &attr.value;
-				unsafe {
-					let desc_str = str::from_utf8_unchecked(&desc);
-					if desc_str.eq("Description") {
-						let desc_val = match reader.read_text(b"Note", &mut Vec::new()) {
-							Ok(x) => x,
-							Err(_) => continue,
-						};
+        entry = match reader.read_text(b"Title", &mut Vec::new()) {
+          Ok(r) => r,
+          Err(e) => { println!("\x1b[38;5;208mError reading xml: {}\x1b[0m", e); return; }
+        };
+      }
+      Ok(Event::Start(ref e)) if e.name() == b"Note" => {
+        let attr = &e.attributes().map(|a| a.unwrap()).collect::<Vec<_>>()[1];
+        let desc = &attr.value;
+        unsafe {
+          let desc_str = str::from_utf8_unchecked(&desc);
+          if desc_str.eq("Description") {
+            let desc_val = match reader.read_text(b"Note", &mut Vec::new()) {
+              Ok(x) => x,
+              Err(_) => continue,
+            };
             txt.push(desc_val);
-						if entry.contains(find_this) {
-							println!("\x1b[38;5;89mEntry found: \x1b[0m\x1b[38;5;86m{}\x1b[0m", txt[0]);
+            if entry.contains(find_this) {
+              println!("\x1b[38;5;89mEntry found: \x1b[0m\x1b[38;5;86m{}\x1b[0m", txt[0]);
               println!("\x1b[38;5;208mProcessing complete.\x1b[0m");
-						  return;
+              return;
             }
-						txt = Vec::new();
-					}
-				}
-			},
-			Ok(Event::Eof) => break, // exits the loop when reaching end of file
-			Err(e) => println!("\x1b[38;5;208mError in buffered reader: {}\x1b[0m",  e),
-			_ => (), // There are several other `Event`s we do not consider here
-		}
-		buf.clear();
+            txt = Vec::new();
+          }
+        }
+      },
+      Ok(Event::Eof) => break, // exits the loop when reaching end of file
+      Err(e) => println!("\x1b[38;5;208mError in buffered reader: {}\x1b[0m",  e),
+      _ => (), // There are several other `Event`s we do not consider here
+    }
+    buf.clear()
   }
 }
