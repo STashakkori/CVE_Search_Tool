@@ -1,5 +1,5 @@
 // CVE Search Tool
-// Author: Sina Tashakkori, QVLx Labs
+// Author: $t@$h, QVLx Labs
 
 use quick_xml::Reader;
 use quick_xml::events::Event;
