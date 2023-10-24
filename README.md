@@ -6,8 +6,6 @@ https://cve.mitre.org/data/downloads/index.html
 
 Then you can use this tool to search it. Just pass it an entry number and let it work. Returns nothing if not found
 
-FYI file is monstrous in size so have some disk free.
-
 Also, there is an unsafe block in this code that grabs bytes from the .xml file without checking them for valid
 UTF-8. Don't worry too much about it. If you grab the database directly from MITRE likely valid
 
